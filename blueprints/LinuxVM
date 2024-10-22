@@ -1,0 +1,42 @@
+spec_version: 2
+
+description: 'Deploy an Azure Linux VM using Terraform'
+
+inputs:
+  VM Name:
+    type: 'string'
+    default: 'ohad-linux'
+  Resource Group:
+    type: 'string'
+    default: 'Cloudshell'
+  Location:
+    type: 'string'
+    default: 'westeurope'
+  Admin Username:
+    type: 'string'
+    default: 'ohad'
+  Admin Password:
+    type: '1234'
+    display:
+      style: masked
+
+outputs:
+  VM Identifier:
+    value: '{{.grains.Linux_VM.outputs.vm_id}}'
+  Public IP:
+    value: '{{.grains.Linux_VM.outputs.public_ip}}'
+
+grains:
+  Linux_VM:
+    kind: 'terraform'
+    spec:
+      source:
+        store: 'ProductionBPs'
+        path: 'assets/terraform/azure/linux-vm'
+      agent:
+        name: '{{ .inputs.Resource Group }}'
+      inputs:
+        vm_name: '{{ .inputs.VM Name }}'
+        admin_username: '{{ .inputs.Admin Username }}'
+        admin_password: '{{ .inputs.Admin Password }}'
+        location: '{{ .inputs.Location }}'
